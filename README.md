@@ -85,19 +85,19 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
 
 ### Claude Code
 
-- [ ] From the repo root, register all six servers:
+- [ ] From the repo root, register all three servers:
+
   ```bash
   cd "$WORKSHOP_DIR"
   claude mcp add acmeops           -- uv run python -m acmeops_server --transport stdio
   claude mcp add summarizer_server -- uv run python -m summarizer_server
-  claude mcp add server-a          -- uv run python diagnostic/server-a/server.py
-  claude mcp add server-b          -- uv run python diagnostic/server-b/server.py
-  claude mcp add server-c          -- uv run python diagnostic/server-c/server.py
+  claude mcp add scaffold-<f-lastname> -- uv run python tier3-build/scaffold<f-lastname>/server.py
   ```
-- [ ] Confirm all five are connected:
+
+- [ ] Confirm all three are connected:
   ```bash
   claude mcp list
-  # All five entries should show "Connected" (or a green check, depending on your version)
+  # All three entries should show "Connected" (or a green check, depending on your version)
   ```
 
 ### Cursor
@@ -107,34 +107,18 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
   {
     "mcpServers": {
       "acmeops": {
-        "command": "uv",
-        "args": ["run", "python", "-m", "acmeops_server", "--transport", "stdio"],
-        "cwd": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>"
+        "command": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>/.venv/bin/python",
+        "args": ["-m", "acmeops_server", "--transport", "stdio"]
       },
       "summarizer_server": {
-        "command": "uv",
-        "args": ["run", "python", "-m", "summarizer_server"],
-        "cwd": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>"
-      },
-      "server-a": {
-        "command": "uv",
-        "args": ["run", "python", "diagnostic/server-a/server.py"],
-        "cwd": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>"
-      },
-      "server-b": {
-        "command": "uv",
-        "args": ["run", "python", "diagnostic/server-b/server.py"],
-        "cwd": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>"
-      },
-      "server-c": {
-        "command": "uv",
-        "args": ["run", "python", "diagnostic/server-c/server.py"],
-        "cwd": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>"
+        "command": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>/.venv/bin/python",
+        "args": ["-m", "summarizer_server"]
       },
       "scaffold": {
-        "command": "uv",
-        "args": ["run", "python", "tier3-build/scaffold-<f-lastname>/server.py"],
-        "cwd": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>"
+        "command": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>/.venv/bin/python",
+        "args": [
+          "/absolute/path/to/mcp-security-workshop-<firstname-lastname>/tier3-build/scaffold<f-lastname>/server.py"
+        ]
       }
     }
   }
@@ -153,9 +137,6 @@ Expected tools per server (any match is a pass):
 
 - [ ] `acmeops` — `read_customer_note`, `draft_email`, `run_db_query`, etc.
 - [ ] `summarizer_server` — `summarize`
-- [ ] `server-a` — `get_ticket_status`
-- [ ] `server-b` — `search_logs`, `run_diagnostic`, `fetch_log_archive`
-- [ ] `server-c` — `summarize_pr`, `list_review_comments`, `post_review_comment`
 - [ ] `scaffold` — `echo`, `read_note`
 
 If a server shows no tools or fails to connect, debug it now. Don't wait until T-30 on workshop day.
@@ -186,4 +167,4 @@ This is **not** an MCP server. It's a local OAuth 2.1 authorization server that 
 - [ ] `uv run python -c "import mcp; print('ok')"` prints `ok`.
 - [ ] You've at least skimmed the MCP 2025-11-25 spec's Security Best Practices section.
 
-If every box is ticked, you're set! See you on workshop day! 
+If every box is ticked, you're set! See you on workshop day!

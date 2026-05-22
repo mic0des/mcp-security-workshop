@@ -12,6 +12,7 @@ We'll touch all of these during the workshop. Skimming them ahead of time means 
 
 - [ ] [MCP specification 2025-11-25](https://modelcontextprotocol.io/specification/latest) — focus on the [Security Best Practices](https://modelcontextprotocol.io/specification/latest/basic/security_best_practices) and [Authorization](https://modelcontextprotocol.io/specification/latest/basic/authorization) pages.
 - [ ] [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/) — read the top-level taxonomy. You do not need to memorize the IDs; recognising the categories (tool poisoning, token passthrough, prompt injection, etc.) is enough.
+- We will also be using Miro for an activity in the workshop. Go through this [link](https://miro.com/welcomeonboard/WngzTk1nZkpXdXhxQkNkUkk1Y0xZdFlKamcvQjlqclE4UUx4L250ZTNIWGJEYzRoMVpkc1JUL0dFS3FJUzlIeUliM3JhcDZsNlBsalZ4ZzJTYVFYTXhPaUNhczhZMXNtUlNIZ3ZYQUxMZnZvN1FBUFE1SFRmczFuakFiTzVNZUl3VHhHVHd5UWtSM1BidUtUYmxycDRnPT0hdjE=?share_link_id=32212746435) and register beforehand. This should take less than 5 minutes, and requires only an email address.
 
 ---
 

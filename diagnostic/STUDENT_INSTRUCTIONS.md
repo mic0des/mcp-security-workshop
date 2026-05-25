@@ -16,7 +16,7 @@ You have **20 minutes**. Three teams have asked you to security-review their MCP
    - **Patch first**: there are issues, list them
    - **Block**: there are issues serious enough to block release
 
-4. **Do not look at each other's Miro cards** until time is called. We want each person's independent read.
+4. At the end, we will discuss your findings. Have fun!
 
 ## What to look for
 
@@ -27,6 +27,6 @@ Some servers may have zero issues. Some may have several. The point isn't to fin
 ## Time budget
 
 - Read servers A, B, C: 18 min (6 min each, hard timer)
-- Post your verdicts: 2 min
+- Post your verdicts in chat.
 
 When time is called, we'll discuss together.

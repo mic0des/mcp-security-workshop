@@ -2,7 +2,7 @@
 
 A self-serve checklist for students attending the Hardening MCP Servers workshop. Go top to bottom; tick each box as you complete it. You should be done in **under 30 minutes** if your machine already has a recent Python and a working terminal.
 
-Total: 8 steps. The workshop itself is not about installing MCP servers — once you finish Step 6 you can close the terminal and walk in cold on workshop day.
+Total: 7 steps. The workshop itself is not about installing MCP servers. Once you finish Step 5 you can be confident that you're ready on workshop day.
 
 ---
 

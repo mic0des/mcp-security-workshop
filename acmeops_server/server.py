@@ -114,8 +114,6 @@ def read_customer_note(customer_id: str) -> str:
     instructions from untrusted retrieved content.
     """
     content = customers.read_note(customer_id)
-    if _PATCHED:
-        return f"<untrusted-source>\n{content}\n</untrusted-source>"
     return content
 
 

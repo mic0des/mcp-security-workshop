@@ -12,7 +12,6 @@ We'll touch all of these during the workshop. Skimming them ahead of time means 
 
 - [ ] [MCP specification 2025-11-25](https://modelcontextprotocol.io/specification/latest) — focus on the [Security Best Practices](https://modelcontextprotocol.io/specification/latest/basic/security_best_practices) and [Authorization](https://modelcontextprotocol.io/specification/latest/basic/authorization) pages.
 - [ ] [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/) — read the top-level taxonomy. You do not need to memorize the IDs; recognising the categories (tool poisoning, token passthrough, prompt injection, etc.) is enough.
-- We will also be using Miro for an activity in the workshop. Go through this [link](https://miro.com/welcomeonboard/WngzTk1nZkpXdXhxQkNkUkk1Y0xZdFlKamcvQjlqclE4UUx4L250ZTNIWGJEYzRoMVpkc1JUL0dFS3FJUzlIeUliM3JhcDZsNlBsalZ4ZzJTYVFYTXhPaUNhczhZMXNtUlNIZ3ZYQUxMZnZvN1FBUFE1SFRmczFuakFiTzVNZUl3VHhHVHd5UWtSM1BidUtUYmxycDRnPT0hdjE=?share_link_id=32212746435) and register beforehand. This should take less than 5 minutes, and requires only an email address.
 
 ---
 
@@ -66,23 +65,9 @@ We'll touch all of these during the workshop. Skimming them ahead of time means 
 
 ---
 
-## Step 4 — Rename your Tier 3 scaffold
+## Step 4 — Register MCP servers in your client
 
-During one portion of the workshop, you might get a chance to partner up. Rename the scaffold directory now, so that if we get to this part things will go smoother.
-
-- [ ] Rename `tier3-build/scaffold` to `tier3-build/scaffold-<first-initial-lastname>`:
-  ```bash
-  cd "$WORKSHOP_DIR"
-  mv tier3-build/scaffold tier3-build/scaffold-<f-lastname>     # e.g. scaffold-jdoe
-  ```
-
-Use **first-initial + lastname** (e.g. `scaffold-jdoe`), not the longer fork-style name. Keeps it short on `ls` and easy to type.
-
----
-
-## Step 5 — Register MCP servers in your client
-
-Pick **one** client — Claude Code or Cursor (though Claude is recommended for a bit more ease of use!) — and use its block below. The workshop is not about wiring up MCP servers, so we do this once now and leave it connected for the whole day. There is no remove/re-add cycle.
+Pick **one** client — Claude Code or Cursor (though Claude is recommended for more ease of use!  The facilitator will be using it) — and use its block below. The workshop is not about wiring up MCP servers, so we do this once now and leave it connected for the whole day. There is no remove/re-add cycle.
 
 ### Claude Code
 
@@ -92,13 +77,12 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
   cd "$WORKSHOP_DIR"
   claude mcp add acmeops           -- uv run python -m acmeops_server --transport stdio
   claude mcp add summarizer_server -- uv run python -m summarizer_server
-  claude mcp add scaffold-<f-lastname> -- uv run python tier3-build/scaffold<f-lastname>/server.py
   ```
 
 - [ ] Confirm all three are connected:
   ```bash
   claude mcp list
-  # All three entries should show "Connected" (or a green check, depending on your version)
+  # All entries should show "Connected" (or a green check, depending on your version)
   ```
 
 ### Cursor
@@ -114,12 +98,6 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
       "summarizer_server": {
         "command": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>/.venv/bin/python",
         "args": ["-m", "summarizer_server"]
-      },
-      "scaffold": {
-        "command": "/absolute/path/to/mcp-security-workshop-<firstname-lastname>/.venv/bin/python",
-        "args": [
-          "/absolute/path/to/mcp-security-workshop-<firstname-lastname>/tier3-build/scaffold<f-lastname>/server.py"
-        ]
       }
     }
   }
@@ -128,9 +106,9 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
 
 ---
 
-## Step 6 — Smoke-test each server (list one tool)
+## Step 5 — Smoke-test each server (list one tool)
 
-In your client's chat, send the prompt below **six times** — once per server. Confirm that one of the expected tool names appears in the response. Don't worry about behaviour here as we'll do that during the workshop, only confirm the client can reach the server and read its tool list.
+In your client's chat, send the prompt below once per server. Confirm that one of the expected tool names appears in the response. Don't worry about behaviour here as we'll do that during the workshop, only confirm the client can reach the server and read its tool list.
 
 > "What tools does the `<server-name>` MCP server expose?"
 
@@ -138,13 +116,12 @@ Expected tools per server (any match is a pass):
 
 - [ ] `acmeops` — `read_customer_note`, `draft_email`, `run_db_query`, etc.
 - [ ] `summarizer_server` — `summarize`
-- [ ] `scaffold` — `echo`, `read_note`
 
 If a server shows no tools or fails to connect, debug it now. Don't wait until T-30 on workshop day.
 
 ---
 
-## Step 7 — HTTP smoke-test the fake authz server
+## Step 6 — HTTP smoke-test the fake authz server
 
 This is **not** an MCP server. It's a local OAuth 2.1 authorization server that you may get to use in one demo. Don't register it in your MCP client; just confirm that it runs.
 
@@ -160,11 +137,10 @@ This is **not** an MCP server. It's a local OAuth 2.1 authorization server that 
 
 ---
 
-## Step 8 — Final pre-flight
+## Step 7 — Final pre-flight
 
 - [ ] `claude mcp list` (or the Cursor MCP panel) shows all six servers connected.
-- [ ] All six smoke-test prompts in Step 6 returned the expected tool names.
-- [ ] `tier3-build/scaffold-<f-lastname>/server.py` exists at the renamed path.
+- [ ] All smoke-test prompts in Step 5 returned the expected tool names.
 - [ ] `uv run python -c "import mcp; print('ok')"` prints `ok`.
 - [ ] You've at least skimmed the MCP 2025-11-25 spec's Security Best Practices section.
 

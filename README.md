@@ -102,7 +102,7 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
     }
   }
   ```
-- [ ] Restart Cursor. Open Settings → Features → MCP. Each of the six entries should show a green dot.
+- [ ] Restart Cursor. Open Settings → Features → MCP. Each of the entries should show a green dot.
 
 ---
 

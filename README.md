@@ -87,7 +87,8 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
 
 ### Cursor
 
-- [ ] Open `~/.cursor/mcp.json` (create it if it doesn't exist) and add the following block. 
+- [ ] Open `~/.cursor/mcp.json` (create it if it doesn't exist) and add the following block.
+      OR via the GUI menu: Cursor > Settings > Cursor Settings > Tools & MCPs > +New MCP Server
   ```json
   {
     "mcpServers": {
@@ -102,7 +103,7 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
     }
   }
   ```
-- [ ] Restart Cursor. Open Settings → Features → MCP. Each of the entries should show a green dot.
+- [ ] Restart Cursor. Open Cursor > Settings > Cursor Settings > Tools & MCPs. Each of the entries should show a green dot.
 
 ---
 

@@ -1,24 +1,20 @@
-"""Token-verifier failure demo for workshop Block 2D.
+"""Token-verifier failure demo for workshop Block 2D — MCP07 vulnerability.
 
 Mints three test JWTs locally (no HTTP token endpoint needed — we read
-fake_authz_server's private key off disk) and runs each through both
-verifier classes defined in `acmeops_server.server`:
+fake_authz_server's private key off disk) and runs each through
+PermissiveTokenVerifier, the intentional MCP07 vulnerability in
+`acmeops_server.server`.
 
-  - PermissiveTokenVerifier (the intentional MCP07 vulnerability)
-  - AcmeTokenVerifier       (the MCP07 fix)
-
-Prints a 2x3 result matrix. The punchline: the permissive verifier accepts
-a JWT minted for `https://attacker.example` and hands back
-`scopes=[acme:admin]`. Every tool on the server would run as admin for
-that token holder. The audience-checking verifier rejects it.
-
-Requires `fake_authz_server` to be running ONLY for AcmeTokenVerifier
-(which fetches JWKS at http://localhost:9000/jwks.json). If JWKS fetch
-fails, the script prints a hint and continues with PermissiveTokenVerifier
-results only.
+The punchline: the permissive verifier accepts a JWT minted for
+`https://attacker.example` and hands back `scopes=[acme:admin]`.  Every tool
+on the server would run as admin for that token holder, even though the token
+was never issued for this service.
 
 Run from repo root:
     uv run python scripts/auth_demo.py
+
+To see the fixed behaviour, run:
+    uv run python scripts/auth_demo_secure.py
 """
 
 from __future__ import annotations
@@ -31,13 +27,12 @@ from typing import Any
 
 import jwt as pyjwt
 
-from acmeops_server.server import AcmeTokenVerifier, PermissiveTokenVerifier
+from acmeops_server.server import PermissiveTokenVerifier
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PRIVATE_KEY_PATH = REPO_ROOT / "fake_authz_server" / "keys" / "private.pem"
 
 ISSUER = "http://localhost:9000"
-JWKS_URL = "http://localhost:9000/jwks.json"
 EXPECTED_AUD = "https://acmeops.internal"
 ATTACKER_AUD = "https://attacker.example"
 KID = "fake-authz-1"
@@ -115,11 +110,6 @@ async def main() -> None:
     }
 
     permissive = PermissiveTokenVerifier()
-    audience_checked = AcmeTokenVerifier(
-        jwks_url=JWKS_URL,
-        expected_audience=EXPECTED_AUD,
-        expected_issuer=ISSUER,
-    )
 
     print()
     print("Minted three test JWTs:")
@@ -130,73 +120,48 @@ async def main() -> None:
     print("Both are signed with fake_authz_server's RS256 key (kid={!r}).".format(KID))
     print()
 
-    # Probe JWKS reachability up-front so we can give a friendly hint.
-    jwks_ok = True
-    try:
-        probe = await audience_checked.verify_token(tokens["right-aud"])
-        if probe is None:
-            jwks_ok = False
-    except Exception:
-        jwks_ok = False
-    if not jwks_ok:
-        print(
-            "[hint] AcmeTokenVerifier could not reach the JWKS endpoint at\n"
-            f"       {JWKS_URL}\n"
-            "       Did you start fake_authz_server in another terminal?\n"
-            "           uv run python -m fake_authz_server\n"
-            "       Continuing — PermissiveTokenVerifier results are still valid.\n"
-        )
-
-    results: dict[str, dict[str, dict[str, Any] | None]] = {
-        "PermissiveTokenVerifier": {},
-        "AcmeTokenVerifier": {},
-    }
+    row: dict[str, dict[str, Any] | None] = {}
     for label, token in tokens.items():
-        results["PermissiveTokenVerifier"][label] = await _verify(permissive, token)
-        results["AcmeTokenVerifier"][label] = await _verify(audience_checked, token)
+        row[label] = await _verify(permissive, token)
 
-    # --- Render the 2x3 matrix ----------------------------------------------
+    # --- Result row -------------------------------------------------------------
     col_w = 22
     header = (
         f"{'Verifier':<24} | {'empty':<{col_w}} | "
         f"{'wrong-aud':<{col_w}} | {'right-aud':<{col_w}}"
     )
-    sep = (
-        f"{'-' * 24}-+-{'-' * col_w}-+-{'-' * col_w}-+-{'-' * col_w}"
-    )
+    sep = f"{'-' * 24}-+-{'-' * col_w}-+-{'-' * col_w}-+-{'-' * col_w}"
+    cells = [_format_result(row[label]) for label in ("empty", "wrong-aud", "right-aud")]
     print(header)
     print(sep)
-    for verifier_name, row in results.items():
-        cells = [_format_result(row[label]) for label in ("empty", "wrong-aud", "right-aud")]
-        print(
-            f"{verifier_name:<24} | "
-            f"{cells[0]:<{col_w}} | {cells[1]:<{col_w}} | {cells[2]:<{col_w}}"
-        )
+    print(
+        f"{'PermissiveTokenVerifier':<24} | "
+        f"{cells[0]:<{col_w}} | {cells[1]:<{col_w}} | {cells[2]:<{col_w}}"
+    )
     print()
 
-    # --- Detail block: show what each ACCEPT actually returned --------------
+    # --- Detail block: show what each ACCEPT actually returned -----------------
     print("Decoded claims for every ACCEPT:")
     print(_hr())
     any_accept = False
-    for verifier_name, row in results.items():
-        for label, claims in row.items():
-            if claims is None:
-                continue
-            if isinstance(claims, dict) and "_error" in claims:
-                continue
-            any_accept = True
-            print(f"{verifier_name} / {label}:")
-            for k in ("sub", "aud", "scope", "scopes", "iss", "client_id", "exp"):
-                if k in claims:
-                    print(f"    {k:>10} = {claims[k]!r}")
-            print()
+    for label, claims in row.items():
+        if claims is None:
+            continue
+        if isinstance(claims, dict) and "_error" in claims:
+            continue
+        any_accept = True
+        print(f"PermissiveTokenVerifier / {label}:")
+        for k in ("sub", "aud", "scope", "scopes", "iss", "client_id", "exp"):
+            if k in claims:
+                print(f"    {k:>10} = {claims[k]!r}")
+        print()
     if not any_accept:
-        print("  (no tokens were accepted — check JWKS reachability)")
+        print("  (no tokens were accepted)")
     print(_hr())
     print()
 
-    # --- Punchline ----------------------------------------------------------
-    permissive_wrong = results["PermissiveTokenVerifier"]["wrong-aud"]
+    # --- Punchline --------------------------------------------------------------
+    permissive_wrong = row["wrong-aud"]
     print("Punchline")
     print(_hr())
     if permissive_wrong is not None:
@@ -212,16 +177,11 @@ async def main() -> None:
         print(
             "(unexpected — PermissiveTokenVerifier should accept any non-empty token)\n"
         )
-    if jwks_ok:
-        print(
-            "AcmeTokenVerifier rejected the same token because the `aud` claim did\n"
-            f"not equal {EXPECTED_AUD!r}. This is the MCP07 fix.\n"
-        )
-    else:
-        print(
-            "Start fake_authz_server and re-run to see AcmeTokenVerifier reject\n"
-            "the wrong-audience token while still accepting the right-audience one.\n"
-        )
+    print(
+        "Fix: implement AcmeTokenVerifier in acmeops_server/server.py and run\n"
+        "    uv run python scripts/auth_demo_secure.py\n"
+        "to see the wrong-audience token rejected.\n"
+    )
 
 
 if __name__ == "__main__":

@@ -32,8 +32,6 @@ _PATCHED = False
 
 
 # --- INTENTIONAL VULNERABILITY (MCP07): permissive TokenVerifier -------------
-# This stub accepts any non-empty token as valid and ignores the audience
-# claim. Workshop Block 2D replaces it with AcmeTokenVerifier below.
 class PermissiveTokenVerifier(TokenVerifier):
     async def verify_token(self, token: str) -> dict[str, Any] | None:
         if not token:
@@ -42,8 +40,6 @@ class PermissiveTokenVerifier(TokenVerifier):
 
 
 # --- MCP07 FIX: audience-validating verifier --------------------------------
-# Validates the RS256 signature against the IdP's JWKS, then enforces `aud`
-# and `iss`. Rejects any token not explicitly issued for this resource.
 class AcmeTokenVerifier(TokenVerifier):
     """Audience-validating verifier — the MCP07 fix."""
 
@@ -90,11 +86,7 @@ mcp = FastMCP("acmeops")
 #         resource_server_url="https://acmeops.internal",
 #         required_scopes=["acme:tickets:read"],
 #     ),
-#     token_verifier=AcmeTokenVerifier(
-#         jwks_url="http://localhost:9000/jwks.json",
-#         expected_audience="https://acmeops.internal",
-#         expected_issuer="http://localhost:9000",
-#     ),
+#     token_verifier=PermissiveTokenVerifier()
 # )
 
 

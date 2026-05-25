@@ -87,7 +87,7 @@ Pick **one** client — Claude Code or Cursor (though Claude is recommended for 
 
 ### Cursor
 
-- [ ] Open `~/.cursor/mcp.json` (create it if it doesn't exist) and add the following block. **Replace `/absolute/path/to/...`** with your real `$WORKSHOP_DIR`, and **replace `<f-lastname>`** with the suffix you used in Step 4.
+- [ ] Open `~/.cursor/mcp.json` (create it if it doesn't exist) and add the following block. 
   ```json
   {
     "mcpServers": {
